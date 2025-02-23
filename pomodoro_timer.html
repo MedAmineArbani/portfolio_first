@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pomodoro Timer</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        body {
+            background-image: url('background123.jpg'); /* Remplacez par le chemin de votre image */
+            background-size: cover; /* Ajuste l'image pour couvrir tout l'arrière-plan */
+            background-position: center; /* Centre l'image */
+            background-repeat: no-repeat; /* Empêche la répétition de l'image */
+            background-attachment: fixed; /* Fixe l'image pour qu'elle ne défile pas avec la page */
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 1200px;
+            background-color: transparent;
+        }
+
+        .messages {
+            align-self: flex-start; /* Positionne le bloc de messages en haut à gauche */
+            width: 20%;
+            padding: 20px;
+            background-color: rgba(248, 248, 248, 0.8); /* Fond légèrement transparent */
+            border: 1px solid #ddd;
+            margin-bottom: 20px; /* Espace entre le bloc de messages et le timer */
+        }
+
+        .messages h2 {
+            margin-top: 0;
+        }
+
+        .main-content {
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.8); /* Fond légèrement transparent */
+            padding: 20px;
+            border: 1px solid #ddd;
+            width: 80%;
+            max-width: 800px;
+        }
+
+        .timer {
+            font-size: 3em;
+            margin: 20px 0;
+        }
+
+        .controls button {
+            margin: 5px;
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+        }
+
+        .tasks {
+            margin-top: 20px;
+        }
+
+        .tasks input {
+            padding: 10px;
+            font-size: 1em;
+            width: calc(100% - 120px);
+        }
+
+        .tasks button {
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+        }
+
+        #task-list {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        #task-list li {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        #task-list li button {
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        div {
+    border-radius: 20%; /* Rend le div circulaire */
+   
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Bloc de messages en haut à gauche -->
+        <div class="messages">
+        <h2 style="color:rgb(13, 68, 1)">Messages</h2>
+        <ul id="message-list">
+            <li style="color:darkolivegreen">
+                <i class="fab fa-linkedin" ></i> Linkedin | Ahmed viens d'...
+            </li><br>
+            <li style="color:darkolivegreen">
+                <i class="fab fa-instagram"></i> Instagram | Wiam a réa...
+            </li>
+        </ul>
+    </div>
+
+        <!-- Contenu principal (Timer et tâches) -->
+        <div class="main-content">
+            <h1 style="color:rgb(13, 68, 1)">Pomodoro Timer</h1>
+            <div class="timer">
+                <span id="time" style="color:darkolivegreen">25:00</span>
+            </div>
+            <div class="controls">
+                <button id="start-btn" style="color:cadetblue;">Démarrer</button>
+                <button id="pause-btn" style="color:rgb(98, 4, 4);">Pause</button>
+                <button id="reset-btn" style="color:cadetblue;">Réinitialiser</button>
+            </div>
+            <div class="tasks">
+                <h2>Tâches</h2>
+                <input type="text" id="task-input" placeholder="Ajouter une tâche">
+                <button id="add-task-btn" style="color:cadetblue;">Ajouter</button>
+                <ul id="task-list">
+                    <!-- Tasks will appear here -->
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let timer;
+        let timeLeft = 25 * 60;
+        let isPaused = false;
+
+        const timeDisplay = document.getElementById('time');
+        const startBtn = document.getElementById('start-btn');
+        const pauseBtn = document.getElementById('pause-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const taskInput = document.getElementById('task-input');
+        const addTaskBtn = document.getElementById('add-task-btn');
+        const taskList = document.getElementById('task-list');
+        const messageList = document.getElementById('message-list');
+
+        function updateTime() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timeDisplay.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+        }
+
+        function startTimer() {
+            if (!isPaused) {
+                timeLeft = 25 * 60;
+            }
+            isPaused = false;
+            timer = setInterval(() => {
+                if (timeLeft > 0) {
+                    timeLeft--;
+                    updateTime();
+                } else {
+                    clearInterval(timer);
+                    alert('Temps écoulé ! Prenez une pause de 5 minutes.');
+                    timeLeft = 5 * 60;
+                    startTimer();
+                }
+            }, 1000);
+        }
+
+        function pauseTimer() {
+            clearInterval(timer);
+            isPaused = true;
+        }
+
+        function resetTimer() {
+            clearInterval(timer);
+            timeLeft = 25 * 60;
+            updateTime();
+            isPaused = false;
+        }
+
+        function addTask() {
+            const taskText = taskInput.value.trim();
+            if (taskText !== "") {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span>${taskText}</span>
+                    <button onclick="editTask(this)">Éditer</button>
+                    <button onclick="deleteTask(this)">Supprimer</button>
+                `;
+                taskList.appendChild(li);
+                taskInput.value = "";
+            }
+        }
+
+        function editTask(button) {
+            const li = button.parentElement;
+            const span = li.querySelector('span');
+            const newText = prompt("Modifier la tâche :", span.textContent);
+            if (newText !== null) {
+                span.textContent = newText;
+            }
+        }
+
+        function deleteTask(button) {
+            const li = button.parentElement;
+            li.remove();
+        }
+
+        startBtn.addEventListener('click', startTimer);
+        pauseBtn.addEventListener('click', pauseTimer);
+        resetBtn.addEventListener('click', resetTimer);
+        addTaskBtn.addEventListener('click', addTask);
+    </script>
+</body>
+</html>
